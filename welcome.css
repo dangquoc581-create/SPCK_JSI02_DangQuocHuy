@@ -1,0 +1,235 @@
+/* ! Hero và bản xem trước trò chuyện */
+
+.py-lg-6 {
+    padding-top: 5rem;
+    padding-bottom: 5rem;
+}
+
+.welcome-hero {
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 15% 25%, rgba(119, 105, 235, 0.16), transparent 28rem),
+        radial-gradient(circle at 90% 80%, rgba(75, 156, 230, 0.16), transparent 25rem);
+}
+
+.welcome-eyebrow {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    border-radius: 99rem;
+    background: #eeedff;
+    color: var(--hc-primary);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.welcome-gradient-text {
+    color: var(--hc-primary);
+}
+
+.chat-preview {
+    position: relative;
+    max-width: 31rem;
+    border: 1px solid #e2e4ed;
+    border-radius: 1.25rem;
+    background: #fff;
+    box-shadow: 0 1.25rem 3.5rem rgba(59, 57, 118, 0.16);
+}
+
+.chat-preview-header,
+.chat-preview-footer {
+    padding: 1rem 1.25rem;
+}
+
+.chat-preview-header {
+    border-bottom: 1px solid #edf0f4;
+}
+
+.chat-preview-body {
+    display: flex;
+    min-height: 15rem;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 1.25rem;
+    background: #fbfbfd;
+}
+
+.chat-preview-footer {
+    display: flex;
+    border-top: 1px solid #edf0f4;
+}
+
+.preview-message {
+    max-width: 82%;
+    padding: 0.7rem 0.85rem;
+    border-radius: 1rem;
+    font-size: 0.9rem;
+}
+
+.preview-message.received {
+    align-self: flex-start;
+    border-bottom-left-radius: 0.25rem;
+    background: #e9eaf1;
+}
+
+.preview-message.sent {
+    align-self: flex-end;
+    border-bottom-right-radius: 0.25rem;
+    background: var(--hc-primary);
+    color: #fff;
+}
+
+.preview-dot {
+    display: inline-block;
+    width: 0.55rem;
+    height: 0.55rem;
+    border-radius: 50%;
+    background: #35b878;
+}
+
+.preview-notification {
+    position: absolute;
+    right: -2rem;
+    bottom: 2.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    background: #fff;
+    font-size: 0.8rem;
+}
+
+.preview-icon {
+    color: var(--hc-primary);
+}
+
+/* ! Tính năng và cộng đồng */
+
+.welcome-section-heading {
+    max-width: 40rem;
+}
+
+.feature-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-0.25rem);
+    box-shadow: 0 0.8rem 1.5rem rgba(31, 35, 61, 0.1);
+}
+
+.feature-icon {
+    display: inline-grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    place-items: center;
+    border-radius: 0.8rem;
+    background: #eeedff;
+    color: var(--hc-primary);
+    font-size: 1.4rem;
+    font-weight: 700;
+}
+
+.avatar-stack {
+    display: flex;
+    align-items: center;
+}
+
+.avatar-stack > * {
+    margin-right: -0.65rem;
+    border: 3px solid var(--hc-bg);
+}
+
+.avatar-blue {
+    background: linear-gradient(135deg, #4b9ce6, #6d69df);
+}
+
+.avatar-green {
+    background: linear-gradient(135deg, #48ac83, #4e92c8);
+}
+
+.avatar-pink {
+    background: linear-gradient(135deg, #d878ba, #9c72d9);
+}
+
+.avatar-more {
+    display: inline-grid;
+    width: 2.5rem;
+    height: 2.5rem;
+    place-items: center;
+    border-radius: 50%;
+    background: #e9eaf1;
+    color: var(--hc-muted);
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.community-card {
+    height: 100%;
+}
+
+.community-card-offset {
+    margin-top: 2.25rem;
+}
+
+/* ! Giới thiệu và chân trang */
+
+.about-panel {
+    color: #fff;
+    background: linear-gradient(120deg, #5e56d7, #498fdb);
+}
+
+.welcome-eyebrow-light {
+    background: rgba(255, 255, 255, 0.16);
+    color: #fff;
+}
+
+.welcome-footer {
+    background: #252640;
+    color: #fff;
+}
+
+.footer-muted,
+.footer-links {
+    color: #bfc1d5;
+}
+
+.footer-links {
+    text-decoration: none;
+}
+
+.footer-links li + li {
+    margin-top: 0.5rem;
+}
+
+.footer-links:hover {
+    color: #fff;
+}
+
+/* ! Responsive */
+
+@media (max-width: 991.98px) {
+    .preview-notification {
+        right: 1rem;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .py-lg-6 {
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+    }
+
+    .preview-notification {
+        position: static;
+        width: fit-content;
+        margin: 0 1rem 1rem auto;
+        border: 1px solid #edf0f4;
+    }
+
+    .community-card-offset {
+        margin-top: 1.25rem;
+    }
+}

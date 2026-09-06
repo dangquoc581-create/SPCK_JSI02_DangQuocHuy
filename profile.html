@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Hồ sơ | HuyChat</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+        crossorigin="anonymous"
+    >
+    <link rel="stylesheet" href="ui.css">
+</head>
+
+<body>
+
+    <!-- ! Điều hướng -->
+    <nav class="navbar hc-navbar sticky-top border-bottom">
+        <div class="container">
+
+            <a
+                class="navbar-brand d-flex align-items-center gap-2 hc-brand"
+                href="index.html"
+            >
+                <span class="hc-logo">
+                    H
+                </span>
+                HuyChat
+            </a>
+
+            <div class="d-flex gap-2">
+
+                <a
+                    class="btn btn-sm btn-light"
+                    href="index.html"
+                >
+                    Trang chủ
+                </a>
+
+                <button
+                    class="btn btn-sm btn-outline-secondary"
+                    data-sign-out
+                >
+                    Đăng xuất
+                </button>
+
+            </div>
+        </div>
+    </nav>
+
+    <!-- ! Nội dung hồ sơ -->
+    <main class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+
+                <section class="card hc-card mb-4 overflow-hidden">
+
+                    <div class="hc-profile-cover"></div>
+
+                    <div class="card-body px-4 pb-4">
+
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-end gap-3">
+
+                            <span class="hc-avatar hc-avatar-lg hc-profile-avatar" data-user-avatar>
+                                <!-- <span data-user-initials>HC</span> -->
+                            </span>
+
+                            <button class="btn btn-hc" type="button" data-edit-profile>
+                                Chỉnh sửa hồ sơ
+                            </button>
+
+                        </div>
+
+                        <h1
+                            class="h3 fw-bold mb-1"
+                            data-user-name
+                        >
+                            <!-- Huy -->
+                        </h1>
+
+                        <p
+                            class="hc-muted mb-3"
+                            data-user-email
+                        ></p>
+
+                        <p class="mb-3" data-profile-bio>
+                            <!-- Hiện tại mình đang phát triển trang web HuyChat. -->
+                        </p>
+
+                        <div class="d-flex flex-wrap gap-3 small hc-muted">
+
+                            <span data-profile-location>
+                                <!-- 📍 Hồ Chí Minh, Việt Nam -->
+                            </span>
+
+                            <span data-profile-occupation>
+                                <!-- 🎓 Học sinh -->
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <form class="card-body border-top hc-profile-form" id="profile-form" hidden>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label" for="profile-name">Tên hiển thị</label>
+                                <input class="form-control" id="profile-name" maxlength="60" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="profile-avatar">Ảnh đại diện</label>
+                                <input class="form-control" id="profile-avatar" type="file" accept="image/*">
+                                <small class="hc-muted">Tối đa 5 MB</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="profile-location">Địa điểm</label>
+                                <input class="form-control" id="profile-location" maxlength="80">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="profile-occupation">Công việc / học tập</label>
+                                <input class="form-control" id="profile-occupation" maxlength="80">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="profile-bio">Giới thiệu</label>
+                                <textarea class="form-control" id="profile-bio" rows="3" maxlength="240"></textarea>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3 mt-3">
+                            <button class="btn btn-hc" type="submit">Lưu thay đổi</button>
+                            <button class="btn btn-light" type="button" data-cancel-profile>Hủy</button>
+                            <small class="hc-muted" id="profile-status" role="status"></small>
+                        </div>
+                    </form>
+                </section>
+
+            </div>
+        </div>
+    </main>
+
+    <script
+        type="module"
+        src="app.js"
+    ></script>
+
+</body>
+</html>

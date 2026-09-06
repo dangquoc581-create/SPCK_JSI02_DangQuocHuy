@@ -1,145 +1,125 @@
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import {
+    createUserWithEmailAndPassword,
+    getAuth,
+    signInWithEmailAndPassword,
+    signOut
+} from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 import { firebaseConfig } from "./config.js";
 
+// ! Khởi tạo Firebase Authentication.
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-// Helper
-const getElement = (id) => document.getElementById(id);
+// ! Lấy các phần tử dùng chung của trang xác thực.
+const logForm = document.getElementById("logForm");
+const regForm = document.getElementById("regForm");
+const messageBox = document.getElementById("message");
 
 
-// Forms
-const logForm = getElement("logForm");
-const regForm = getElement("regForm");
-const messageBox = getElement("message");
-
-
-// Show message
-const showMessage = (text) => {
-    if (messageBox) {
-        messageBox.textContent = text;
+function showMessage(message, type = "success") {
+    if (!messageBox) {
+        return;
     }
-};
 
-
-// ====================
-// REGISTER
-// ====================
-
-if (regForm) {
-
-    regForm.addEventListener("submit", async (e) => {
-
-        e.preventDefault();
-
-        const username = getElement("userInput").value.trim();
-        const password = getElement("passwordInput").value;
-        const confirmPassword = getElement("confirmPassInput").value;
-        const email = getElement("mailInput").value.trim();
-
-
-        // Check empty fields
-        if (!username || !password || !confirmPassword || !email) {
-
-            showMessage("Nhap day du thong tin pls");
-            return;
-
-        }
-
-
-        // Check password confirmation
-        if (password !== confirmPassword) {
-
-            showMessage("Mat khau khong trung nhau");
-            return;
-
-        }
-
-
-        // Check password length
-        if (password.length < 6) {
-
-            showMessage("Mat khau phai co it nhat 6 ky tu");
-            return;
-
-        }
-
-
-        try {
-
-            await createUserWithEmailAndPassword(
-                auth,
-                email,
-                password
-            );
-
-            showMessage("Dang ky thanh cong!");
-
-            console.log("Registered:", email);
-            console.log("Username:", username);
-
-        } catch (error) {
-
-            console.error(error);
-
-            showMessage(`Loi dang ky: ${error.message}`);
-
-        }
-
-    });
-
+    messageBox.textContent = message;
+    messageBox.classList.toggle("is-error", type === "error");
 }
 
 
-// ====================
-// LOGIN
-// ====================
+// ! Chuyển lỗi Firebase thành thông báo dễ hiểu.
+function getFriendlyErrorMessage(errorCode, action) {
+    const messages = {
+        "auth/email-already-in-use": "Email này đã được sử dụng. Vui lòng dùng email khác.",
+        "auth/invalid-email": "Email không hợp lệ. Vui lòng kiểm tra lại.",
+        "auth/weak-password": "Mật khẩu quá yếu. Vui lòng dùng ít nhất 6 ký tự.",
+        "auth/invalid-credential": "Email hoặc mật khẩu không chính xác.",
+        "auth/user-not-found": "Không tìm thấy tài khoản với email này.",
+        "auth/wrong-password": "Mật khẩu không chính xác.",
+        "auth/too-many-requests": "Bạn đã thử quá nhiều lần. Vui lòng thử lại sau."
+    };
+
+    return messages[errorCode] || `Không thể ${action} lúc này. Vui lòng thử lại.`;
+}
+
+
+// ! Hiển thị thông báo sau khi đăng ký thành công.
+function showRegistrationSuccessMessage() {
+    const searchParams = new URLSearchParams(window.location.search);
+
+    if (searchParams.get("registered") !== "true") {
+        return;
+    }
+
+    showMessage("Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.");
+    window.history.replaceState({}, document.title, "dangnhap.html");
+}
+
+
+// ! Xử lý đăng ký tài khoản.
+async function handleRegister(event) {
+    event.preventDefault();
+
+    const username = document.getElementById("userInput").value.trim();
+    const email = document.getElementById("mailInput").value.trim();
+    const password = document.getElementById("passwordInput").value;
+    const confirmPassword = document.getElementById("confirmPassInput").value;
+
+    if (!username || !email || !password || !confirmPassword) {
+        showMessage("Vui lòng nhập đầy đủ thông tin.", "error");
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        showMessage("Mật khẩu xác nhận không khớp.", "error");
+        return;
+    }
+
+    if (password.length < 6) {
+        showMessage("Mật khẩu phải có ít nhất 6 ký tự.", "error");
+        return;
+    }
+
+    try {
+        await createUserWithEmailAndPassword(auth, email, password);
+
+        // ! Firebase tự đăng nhập sau khi tạo tài khoản.
+        await signOut(auth);
+
+        window.location.href = "dangnhap.html?registered=true";
+    } catch (error) {
+        showMessage(getFriendlyErrorMessage(error.code, "đăng ký"), "error");
+    }
+}
+
+
+// ! Xử lý đăng nhập.
+async function handleLogin(event) {
+    event.preventDefault();
+
+    const email = document.getElementById("logMail").value.trim();
+    const password = document.getElementById("logPass").value;
+
+    if (!email || !password) {
+        showMessage("Vui lòng nhập email và mật khẩu.", "error");
+        return;
+    }
+
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        window.location.href = "index.html";
+    } catch (error) {
+        showMessage(getFriendlyErrorMessage(error.code, "đăng nhập"), "error");
+    }
+}
+
+
+// ! Gắn sự kiện cho form hiện tại.
+if (regForm) {
+    regForm.addEventListener("submit", handleRegister);
+}
 
 if (logForm) {
-
-    logForm.addEventListener("submit", async (e) => {
-
-        e.preventDefault();
-
-        const email = getElement("logMail").value.trim();
-        const password = getElement("logPass").value;
-
-
-        // Check empty fields
-        if (!email || !password) {
-
-            showMessage("Nhap email va mat khau pls");
-            return;
-
-        }
-
-
-        try {
-
-            await signInWithEmailAndPassword(
-                auth,
-                email,
-                password
-            );
-
-            showMessage("Dang nhap thanh cong!");
-
-            console.log("Logged in:", email);
-
-        } catch (error) {
-
-            console.log(error);
-
-            showMessage(`Loi dang nhap: ${error.message}`);
-
-        }
-
-    });
-
+    showRegistrationSuccessMessage();
+    logForm.addEventListener("submit", handleLogin);
 }

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HuyChat | Kết nối theo cách của bạn</title>
+
+    <link
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB"
+        crossorigin="anonymous"
+    >
+    <link rel="stylesheet" href="ui.css">
+    <link rel="stylesheet" href="welcome.css">
+</head>
+
+<body>
+    <!-- ! Điều hướng công khai -->
+    <nav class="navbar navbar-expand-lg hc-navbar sticky-top border-bottom">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center gap-2 hc-brand" href="welcome.html">
+                <span class="hc-logo">H</span>
+                HuyChat
+            </a>
+
+            <button
+                class="navbar-toggler border-0"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#welcomeNav"
+                aria-controls="welcomeNav"
+                aria-expanded="false"
+                aria-label="Mở điều hướng"
+            >
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="welcomeNav">
+                <ul class="navbar-nav mx-lg-auto gap-lg-2 py-3 py-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link hc-nav-link px-3" href="#features">Tính năng</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link hc-nav-link px-3" href="#about">Về HuyChat</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link hc-nav-link px-3" href="#contact">Liên hệ</a>
+                    </li>
+                </ul>
+
+                <div class="d-flex flex-column flex-lg-row gap-2">
+                    <a class="btn btn-outline-primary" href="dangnhap.html">Đăng nhập</a>
+                    <a class="btn btn-hc" href="dangky.html">Đăng ký</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ! Nội dung trang chào mừng -->
+    <main>
+        <section class="welcome-hero py-5 py-lg-6">
+            <div class="container py-lg-5">
+                <div class="row align-items-center g-5">
+                    <div class="col-lg-6">
+                        <span class="welcome-eyebrow">Không gian để kết nối</span>
+                        <h1 class="display-4 fw-bold mt-3 mb-4">
+                            Chào mừng đến với <span class="welcome-gradient-text">HuyChat</span>
+                        </h1>
+                        <p class="lead hc-muted mb-4">
+                            Trò chuyện cùng bạn bè, chia sẻ những khoảnh khắc đáng nhớ và giữ liên lạc theo cách tự nhiên nhất.
+                        </p>
+                        <div class="d-flex flex-column flex-sm-row gap-3">
+                            <a class="btn btn-hc btn-lg px-4" href="dangky.html">Đăng ký miễn phí</a>
+                            <a class="btn btn-outline-primary btn-lg px-4" href="dangnhap.html">Đăng nhập</a>
+                        </div>
+                        <p class="small hc-muted mt-4 mb-0">Dễ bắt đầu · Giao diện thân thiện · Dành cho mọi người</p>
+                    </div>
+
+                    <div class="col-lg-6">
+                        <div class="chat-preview mx-auto">
+                            <div class="chat-preview-header d-flex align-items-center gap-3">
+                                <span class="hc-avatar">LA</span>
+                                <div class="flex-grow-1">
+                                    <strong class="d-block">Linh Anh</strong>
+                                    <small class="text-success">● Đang hoạt động</small>
+                                </div>
+                                <button class="btn btn-light btn-sm preview-icon" type="button" aria-label="Cuộc gọi video mẫu">▣</button>
+                            </div>
+
+                            <div class="chat-preview-body">
+                                <div class="preview-message received">Chào Huy, bạn tham gia buổi gặp cuối tuần chứ?</div>
+                                <div class="preview-message sent">Chắc chắn rồi! Mình sẽ mang theo vài ý tưởng mới. ✨</div>
+                                <div class="preview-message received">Tuyệt quá, hẹn gặp bạn nhé!</div>
+                            </div>
+
+                            <div class="chat-preview-footer d-flex align-items-center gap-2">
+                                <span class="preview-dot"></span>
+                                <span class="flex-grow-1 text-secondary small">Nhập tin nhắn...</span>
+                                <span class="text-primary fw-bold">➤</span>
+                            </div>
+
+                            <div class="preview-notification shadow-sm">
+                                <span class="preview-dot"></span>
+                                <span><strong>3</strong> người bạn đang online</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ! Tính năng -->
+        <section id="features" class="py-5 bg-white">
+            <div class="container py-lg-4">
+                <div class="text-center mx-auto welcome-section-heading mb-5">
+                    <span class="welcome-eyebrow">Tất cả trong một nơi</span>
+                    <h2 class="display-6 fw-bold mt-3">Kết nối theo cách bạn muốn</h2>
+                    <p class="hc-muted mb-0">Những công cụ đơn giản giúp mỗi cuộc trò chuyện trở nên gần gũi hơn.</p>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-sm-6 col-lg-3">
+                        <article class="card hc-card h-100 feature-card">
+                            <div class="card-body p-4">
+                                <span class="feature-icon">✦</span>
+                                <h3 class="h5 fw-bold mt-4">Nhắn tin thời gian thực</h3>
+                                <p class="hc-muted mb-0">Trò chuyện với bạn bè theo thời gian thực.</p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <article class="card hc-card h-100 feature-card">
+                            <div class="card-body p-4">
+                                <span class="feature-icon">▷</span>
+                                <h3 class="h5 fw-bold mt-4">Chia sẻ video</h3>
+                                <p class="hc-muted mb-0">Chia sẻ những khoảnh khắc và video của bạn.</p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <article class="card hc-card h-100 feature-card">
+                            <div class="card-body p-4">
+                                <span class="feature-icon">◉</span>
+                                <h3 class="h5 fw-bold mt-4">Gọi thoại &amp; video</h3>
+                                <p class="hc-muted mb-0">Kết nối trực tiếp bằng cuộc gọi thoại và video.</p>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="col-sm-6 col-lg-3">
+                        <article class="card hc-card h-100 feature-card">
+                            <div class="card-body p-4">
+                                <span class="feature-icon">◎</span>
+                                <h3 class="h5 fw-bold mt-4">Hồ sơ &amp; kết nối</h3>
+                                <p class="hc-muted mb-0">Tạo hồ sơ và kết nối với những người bạn mới.</p>
+                            </div>
+                        </article>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ! Cộng đồng -->
+        <section class="py-5">
+            <div class="container py-lg-4">
+                <div class="row align-items-center g-5">
+                    <div class="col-lg-6">
+                        <span class="welcome-eyebrow">Cộng đồng đang lớn dần</span>
+                        <h2 class="display-6 fw-bold mt-3">Một lời chào có thể mở đầu cho một kết nối mới.</h2>
+                        <p class="hc-muted mb-4">HuyChat là không gian thử nghiệm thân thiện để mọi người trò chuyện, chia sẻ và gặp gỡ những người có cùng mối quan tâm.</p>
+                        <div class="avatar-stack" aria-label="Các thành viên minh họa">
+                            <span class="hc-avatar">LA</span>
+                            <span class="hc-avatar avatar-blue">MN</span>
+                            <span class="hc-avatar avatar-green">TH</span>
+                            <span class="hc-avatar avatar-pink">PL</span>
+                            <span class="avatar-more">+12</span>
+                        </div>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <article class="card hc-card community-card community-card-offset">
+                                    <div class="card-body p-4">
+                                        <p class="mb-3">“Mình thích cảm giác mọi thứ được sắp xếp thật đơn giản.”</p>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="hc-avatar avatar-blue">MN</span>
+                                            <small><strong>Minh</strong><br><span class="hc-muted">Thành viên demo</span></small>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                            <div class="col-6">
+                                <article class="card hc-card community-card">
+                                    <div class="card-body p-4">
+                                        <p class="mb-3">“Một nơi gọn gàng để giữ liên lạc với bạn bè.”</p>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="hc-avatar avatar-green">TH</span>
+                                            <small><strong>Tuấn</strong><br><span class="hc-muted">Thành viên demo</span></small>
+                                        </div>
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ! Giới thiệu -->
+        <section id="about" class="py-5 bg-white">
+            <div class="container py-lg-4">
+                <div class="card border-0 about-panel overflow-hidden">
+                    <div class="card-body p-4 p-md-5">
+                        <div class="row align-items-center g-4">
+                            <div class="col-lg-8">
+                                <span class="welcome-eyebrow welcome-eyebrow-light">Về HuyChat</span>
+                                <h2 class="display-6 fw-bold mt-3">Một không gian gần gũi hơn cho những cuộc trò chuyện mỗi ngày.</h2>
+                                <p class="mb-0 opacity-75">HuyChat được xây dựng để tạo ra một không gian đơn giản, nhanh chóng và thân thiện cho việc kết nối và trò chuyện.</p>
+                            </div>
+                            <div class="col-lg-4 text-lg-end">
+                                <a class="btn btn-light btn-lg" href="dangky.html">Tham gia HuyChat</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ! Liên hệ -->
+        <section id="contact" class="py-5">
+            <div class="container py-lg-4">
+                <div class="row g-5">
+                    <div class="col-lg-5">
+                        <span class="welcome-eyebrow">Liên hệ</span>
+                        <h2 class="display-6 fw-bold mt-3">Có điều muốn chia sẻ?</h2>
+                        <p class="hc-muted">Gửi lời nhắn cho đội ngũ HuyChat. Biểu mẫu hiện là bản minh họa giao diện.</p>
+                        <a class="text-decoration-none fw-semibold" href="dangquoc581@gmail.com">dangquoc581@gmail.com</a>
+                        <p class="hc-muted small mt-3 mb-0">Facebook · Instagram · YouTube <span class="ms-1">(demo)</span></p>
+                    </div>
+                    <div class="col-lg-7">
+                        <form class="card hc-card" aria-label="Biểu mẫu liên hệ">
+                            <div class="card-body p-4 p-md-5">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-medium" for="contact-name">Họ tên</label>
+                                        <input class="form-control" id="contact-name" type="text" placeholder="Nguyễn Văn A">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-medium" for="contact-email">Email</label>
+                                        <input class="form-control" id="contact-email" type="email" placeholder="name@example.com">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-medium" for="contact-message">Nội dung</label>
+                                        <textarea class="form-control" id="contact-message" rows="4" placeholder="Bạn muốn nói gì với HuyChat?"></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <button class="btn btn-hc" type="button">Gửi lời nhắn</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ! Chân trang -->
+    <footer class="welcome-footer py-5">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-md-5">
+                    <a class="d-inline-flex align-items-center gap-2 text-white text-decoration-none fw-bold fs-5" href="welcome.html">
+                        <span class="hc-logo">H</span>
+                        HuyChat
+                    </a>
+                    <p class="mt-3 mb-0 footer-muted">Một nơi đơn giản để kết nối, trò chuyện và chia sẻ.</p>
+                </div>
+                <div class="col-6 col-md-3">
+                    <h2 class="h6">Khám phá</h2>
+                    <ul class="list-unstyled footer-links mb-0">
+                        <li><a href="#features">Tính năng</a></li>
+                        <li><a href="#about">Về HuyChat</a></li>
+                        <li><a href="dangky.html">Đăng ký</a></li>
+                    </ul>
+                </div>
+                <div class="col-6 col-md-4">
+                    <h2 class="h6">Liên hệ</h2>
+                    <a class="footer-links" href="dangquoc581@gmail.com">dangquoc581@gmail.com</a>
+                    <p class="footer-muted small mt-2 mb-0">Nội dung và thông tin liên hệ đều là bản minh họa.</p>
+                </div>
+            </div>
+            <div class="border-top border-secondary-subtle mt-4 pt-4 footer-muted small">© 2026 HuyChat. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <!-- ! Bootstrap cho điều hướng trên di động -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"
+    ></script>
+</body>
+</html>

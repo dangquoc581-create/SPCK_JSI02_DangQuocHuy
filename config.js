@@ -1,3 +1,4 @@
+// ! Cấu hình Firebase dùng chung cho ứng dụng.
 export const firebaseConfig = {
   apiKey: "AIzaSyCLcyr5-nSQ3r1L6_ElMnhdw2ZfRe4Im-k",
   authDomain: "spckjsi02dangquochuy.firebaseapp.com",
