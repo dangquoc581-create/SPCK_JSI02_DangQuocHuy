@@ -2,6 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebas
 import {
     createUserWithEmailAndPassword,
     getAuth,
+    sendPasswordResetEmail,
     signInWithEmailAndPassword,
     signOut
 } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
@@ -15,6 +16,7 @@ const auth = getAuth(app);
 const logForm = document.getElementById("logForm");
 const regForm = document.getElementById("regForm");
 const messageBox = document.getElementById("message");
+const forgotPasswordButton = document.getElementById("forgot-password");
 
 
 function showMessage(message, type = "success") {
@@ -43,6 +45,25 @@ function getFriendlyErrorMessage(errorCode, action) {
 }
 
 
+async function handleForgotPassword() {
+    const emailInput = document.getElementById("logMail");
+    const email = emailInput?.value.trim();
+
+    if (!email) {
+        showMessage("Nhập email trước khi yêu cầu đặt lại mật khẩu.", "error");
+        emailInput?.focus();
+        return;
+    }
+
+    try {
+        await sendPasswordResetEmail(auth, email);
+        showMessage("Đã gửi email đặt lại mật khẩu. Hãy kiểm tra hộp thư của bạn.");
+    } catch (error) {
+        showMessage(getFriendlyErrorMessage(error.code, "gửi email đặt lại mật khẩu"), "error");
+    }
+}
+
+
 // ! Hiển thị thông báo sau khi đăng ký thành công.
 function showRegistrationSuccessMessage() {
     const searchParams = new URLSearchParams(window.location.search);
@@ -60,12 +81,11 @@ function showRegistrationSuccessMessage() {
 async function handleRegister(event) {
     event.preventDefault();
 
-    const username = document.getElementById("userInput").value.trim();
     const email = document.getElementById("mailInput").value.trim();
     const password = document.getElementById("passwordInput").value;
     const confirmPassword = document.getElementById("confirmPassInput").value;
 
-    if (!username || !email || !password || !confirmPassword) {
+    if (!email || !password || !confirmPassword) {
         showMessage("Vui lòng nhập đầy đủ thông tin.", "error");
         return;
     }
@@ -122,4 +142,8 @@ if (regForm) {
 if (logForm) {
     showRegistrationSuccessMessage();
     logForm.addEventListener("submit", handleLogin);
+}
+
+if (forgotPasswordButton) {
+    forgotPasswordButton.addEventListener("click", handleForgotPassword);
 }

@@ -39,6 +39,7 @@ const postStatus = document.getElementById("post-status");
 const userInitials = document.querySelectorAll("[data-user-initials]");
 const userAvatars = document.querySelectorAll("[data-user-avatar]");
 let currentProfileAvatar = "";
+let currentProfileDisplayName = "";
 const editProfileButton = document.querySelector("[data-edit-profile]");
 const cancelProfileButton = document.querySelector("[data-cancel-profile]");
 const profileForm = document.getElementById("profile-form");
@@ -51,10 +52,27 @@ const profileBioText = document.querySelector("[data-profile-bio]");
 const profileLocationText = document.querySelector("[data-profile-location]");
 const profileOccupationText = document.querySelector("[data-profile-occupation]");
 const profileAvatarInput = document.getElementById("profile-avatar");
+const messageUserButton = document.querySelector("[data-message-user]");
+const messageCountElements = document.querySelectorAll("[data-message-count]");
+const chatApp = document.getElementById("chat-app");
+const conversationSearchInput = document.getElementById("conversation-search");
+const chatUserSearchResults = document.getElementById("user-search-results");
+const conversationList = document.getElementById("conversation-list");
+const pendingMessageToggle = document.getElementById("pending-message-toggle");
+const pendingMessageLabel = document.getElementById("pending-message-label");
+const pendingMessageCount = document.getElementById("pending-message-count");
+const pendingMessageList = document.getElementById("pending-message-list");
+const activeChatHeader = document.getElementById("active-chat-header");
+const messageList = document.getElementById("message-list");
+const messageForm = document.getElementById("message-form");
+const messageInput = document.getElementById("message-input");
 const adminPanel = document.getElementById("admin-panel");
 const adminUserList = document.getElementById("admin-user-list");
 const adminSearchInput = document.getElementById("admin-user-search");
 const adminSearchStatus = document.getElementById("admin-search-status");
+const userSearchInput = document.getElementById("user-search");
+const userSearchResults = document.getElementById("user-search-results");
+const userSearchStatus = document.getElementById("user-search-status");
 const ADMIN_UID = "LpxkjvP3GoPng51EHzseei9ANlD3";
 const postCommentState = {};
 const replyState = {};
@@ -83,11 +101,17 @@ const DEMO_USERS = [
 ];
 let allUsers = [];
 let currentAuthenticatedUser = null;
+let profileOwnerUid = null;
+let chatConversations = [];
+let activeConversationId = null;
+let activeChatUser = null;
+let stopMessagesListener = null;
 
 
 function updateUserDetails(user) {
     const name = user.email?.split("@")[0] || "Bạn";
     const initials = name.slice(0, 2).toUpperCase();
+    currentProfileDisplayName = name;
 
     userEmailElements.forEach((element) => {
         element.textContent = user.email || "";
@@ -109,9 +133,13 @@ function updateProfileDetails(profile) {
     const location = profile.location || "Chưa cập nhật địa điểm";
     const occupation = profile.occupation || "Chưa cập nhật công việc / học tập";
     currentProfileAvatar = profile.avatarUrl || "";
+    currentProfileDisplayName = name;
 
     userNameElements.forEach((element) => {
         element.textContent = name;
+    });
+    userEmailElements.forEach((element) => {
+        element.textContent = profile.email || "";
     });
     userInitials.forEach((element) => {
         element.textContent = name.slice(0, 2).toUpperCase();
@@ -127,9 +155,10 @@ function updateProfileDetails(profile) {
 }
 
 
-async function loadProfile(user) {
+async function loadProfile(user, persistMissing = true) {
     const fallbackProfile = {
         displayName: user.email?.split("@")[0] || "Bạn",
+        email: user.email || "",
         bio: "",
         location: "",
         occupation: "",
@@ -138,9 +167,11 @@ async function loadProfile(user) {
 
     try {
         const profileSnapshot = await getDoc(doc(db, "users", user.uid));
-        const profile = profileSnapshot.exists() ? profileSnapshot.data() : fallbackProfile;
+        const profile = profileSnapshot.exists()
+            ? { ...fallbackProfile, ...profileSnapshot.data() }
+            : fallbackProfile;
 
-        if (!profileSnapshot.exists()) {
+        if (!profileSnapshot.exists() && persistMissing) {
             await setDoc(doc(db, "users", user.uid), {
                 ...profile,
                 email: user.email,
@@ -168,6 +199,71 @@ async function loadProfile(user) {
         return fallbackProfile;
     }
 }
+
+
+function renderUserSearchResults() {
+    if (!userSearchInput || !userSearchResults || !userSearchStatus) {
+        return;
+    }
+
+    const keyword = userSearchInput.value.trim().toLowerCase();
+    if (!keyword) {
+        userSearchStatus.textContent = "Nhập tên hoặc email để tìm người dùng.";
+        userSearchResults.innerHTML = "";
+        return;
+    }
+
+    const filteredUsers = allUsers.filter((userProfile) => {
+        const searchText = [userProfile.displayName, userProfile.email]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase();
+        return searchText.includes(keyword);
+    });
+
+    userSearchStatus.textContent = filteredUsers.length
+        ? `Tìm thấy ${filteredUsers.length} người dùng`
+        : "Không tìm thấy người dùng phù hợp.";
+    userSearchResults.innerHTML = filteredUsers.map((userProfile) => {
+        const name = userProfile.displayName || userProfile.email?.split("@")[0] || "Không tên";
+        const initials = name.slice(0, 2).toUpperCase();
+        const avatar = userProfile.avatarUrl
+            ? `<img src="${escapeHtml(userProfile.avatarUrl)}" alt="Ảnh đại diện của ${escapeHtml(name)}">`
+            : escapeHtml(initials);
+
+        return `
+            <a class="d-flex align-items-center gap-3 border rounded p-3 text-decoration-none text-reset"
+                href="profile.html?uid=${encodeURIComponent(userProfile.uid)}">
+                <span class="hc-avatar">${avatar}</span>
+                <span>
+                    <span class="fw-semibold d-block">${escapeHtml(name)}</span>
+                    <small class="hc-muted">${escapeHtml(userProfile.email || "Chưa có email")}</small>
+                </span>
+            </a>
+        `;
+    }).join("");
+}
+
+
+async function loadUsersForSearch() {
+    if (!userSearchInput || !userSearchResults) {
+        return;
+    }
+
+        try {
+            const usersSnapshot = await getDocs(collection(db, "users"));
+            allUsers = usersSnapshot.docs.map((userDocument) => ({
+                uid: userDocument.id,
+                ...userDocument.data()
+            }));
+            renderUserSearchResults();
+        } catch (error) {
+            userSearchStatus.textContent = error.code === "permission-denied"
+                ? "Bạn chưa có quyền tìm kiếm người dùng."
+                : "Không thể tải danh sách người dùng.";
+            console.error("User search load error:", error);
+        }
+    }
 
 
 function isAdminUser(user, profile = null) {
@@ -331,7 +427,7 @@ function compressAvatar(file) {
 }
 
 
-async function updateOwnPostAvatars(userId, avatarUrl) {
+async function updateOwnPostDetails(userId, authorName, avatarUrl) {
     const postsSnapshot = await getDocs(query(
         collection(db, "posts"),
         where("authorId", "==", userId)
@@ -341,7 +437,11 @@ async function updateOwnPostAvatars(userId, avatarUrl) {
     let updatesInBatch = 0;
 
     for (const postDocument of postsSnapshot.docs) {
-        batch.update(postDocument.ref, { avatarUrl });
+        const updates = { authorName };
+        if (avatarUrl) {
+            updates.avatarUrl = avatarUrl;
+        }
+        batch.update(postDocument.ref, updates);
         updatesInBatch += 1;
 
         if (updatesInBatch === 500) {
@@ -384,9 +484,7 @@ async function handleProfileSubmit(event) {
             profile.avatarUrl = await compressAvatar(avatarFile);
         }
         await setDoc(doc(db, "users", user.uid), profile, { merge: true });
-        if (profile.avatarUrl) {
-            await updateOwnPostAvatars(user.uid, profile.avatarUrl);
-        }
+        await updateOwnPostDetails(user.uid, profile.displayName, profile.avatarUrl);
         updateProfileDetails(profile);
         profileStatus.textContent = "Đã lưu hồ sơ.";
         toggleProfileForm(false);
@@ -425,6 +523,11 @@ function escapeHtml(value) {
         "'": "&#39;",
         '"': "&quot;"
     }[character]));
+}
+
+
+function getCurrentAuthorName(user = auth.currentUser) {
+    return currentProfileDisplayName || user?.email?.split("@")[0] || "Bạn";
 }
 
 
@@ -670,7 +773,7 @@ async function addReplyToComment(postId, commentId, content) {
 
     await addDoc(collection(db, "posts", postId, "comments", commentId, "replies"), {
         authorId: user.uid,
-        authorName: user.email?.split("@")[0] || "Bạn",
+        authorName: getCurrentAuthorName(user),
         content: content.trim(),
         createdAt: serverTimestamp()
     });
@@ -691,7 +794,7 @@ async function handlePostSubmit(event) {
     postForm.querySelector("button").disabled = true;
 
     try {
-        const authorName = user.email?.split("@")[0] || "Bạn";
+        const authorName = getCurrentAuthorName(user);
         await addDoc(collection(db, "posts"), {
             content,
             authorName,
@@ -731,7 +834,7 @@ async function addCommentToPost(postId, content) {
 
     await addDoc(collection(db, "posts", postId, "comments"), {
         authorId: user.uid,
-        authorName: user.email?.split("@")[0] || "Bạn",
+        authorName: getCurrentAuthorName(user),
         content: content.trim(),
         createdAt: serverTimestamp()
     });
@@ -818,6 +921,311 @@ async function toggleLikePost(postId) {
 }
 
 
+function getConversationId(firstUserId, secondUserId) {
+    return [firstUserId, secondUserId].sort().join("__");
+}
+
+
+function getOtherParticipant(conversation) {
+    const otherUserId = conversation.participantIds?.find(
+        (participantId) => participantId !== currentAuthenticatedUser?.uid
+    );
+    const storedProfile = conversation.participantProfiles?.[otherUserId] || {};
+
+    return {
+        uid: otherUserId,
+        ...storedProfile,
+        displayName: storedProfile.displayName || storedProfile.email?.split("@")[0] || "Người dùng"
+    };
+}
+
+
+function renderChatAvatar(userProfile) {
+    const name = userProfile.displayName || "Người dùng";
+    return userProfile.avatarUrl
+        ? `<img src="${escapeHtml(userProfile.avatarUrl)}" alt="Ảnh đại diện của ${escapeHtml(name)}">`
+        : escapeHtml(name.slice(0, 2).toUpperCase());
+}
+
+
+function renderPendingMessages() {
+    if (!pendingMessageList || !pendingMessageLabel) {
+        return;
+    }
+
+    const pendingConversations = chatConversations.filter(
+        (conversation) => conversation.lastSenderId && conversation.lastSenderId !== currentAuthenticatedUser?.uid
+    );
+    const count = pendingConversations.length;
+    pendingMessageLabel.textContent = `(${count})`;
+    if (pendingMessageCount) {
+        pendingMessageCount.textContent = count;
+        pendingMessageCount.hidden = count === 0;
+    }
+    messageCountElements.forEach((element) => {
+        element.textContent = count;
+        element.hidden = count === 0;
+    });
+
+    pendingMessageList.innerHTML = pendingConversations.length
+        ? pendingConversations.map((conversation) => {
+            const otherUser = getOtherParticipant(conversation);
+            return `
+                <button type="button" class="btn btn-sm btn-light w-100 text-start d-flex gap-2 align-items-center mb-1"
+                    data-chat-user-id="${escapeHtml(otherUser.uid || "")}">
+                    <span class="hc-avatar hc-avatar-sm">${renderChatAvatar(otherUser)}</span>
+                    <span class="text-truncate">
+                        <strong class="d-block text-truncate">${escapeHtml(otherUser.displayName)}</strong>
+                        <small class="hc-muted">${escapeHtml(conversation.lastMessage || "Tin nhắn mới")}</small>
+                    </span>
+                </button>
+            `;
+        }).join("")
+        : '<p class="small hc-muted mb-0">Không có tin nhắn chờ.</p>';
+}
+
+
+function renderConversationList() {
+    if (!conversationList) {
+        return;
+    }
+
+    const keyword = conversationSearchInput?.value.trim().toLowerCase() || "";
+    const visibleConversations = chatConversations.filter((conversation) => {
+        const otherUser = getOtherParticipant(conversation);
+        return !keyword || `${otherUser.displayName} ${otherUser.email || ""}`.toLowerCase().includes(keyword);
+    });
+
+    conversationList.innerHTML = visibleConversations.length
+        ? visibleConversations.map((conversation) => {
+            const otherUser = getOtherParticipant(conversation);
+            const isPending = conversation.lastSenderId !== currentAuthenticatedUser?.uid;
+            return `
+                <button type="button" class="list-group-item list-group-item-action hc-chat-item d-flex gap-3 align-items-center ${conversation.id === activeConversationId ? "active" : ""}"
+                    data-chat-user-id="${escapeHtml(otherUser.uid || "")}">
+                    <span class="hc-avatar">${renderChatAvatar(otherUser)}</span>
+                    <span class="flex-grow-1 text-start text-truncate">
+                        <strong class="d-block text-truncate">${escapeHtml(otherUser.displayName)}</strong>
+                        <small class="hc-muted d-block text-truncate">${escapeHtml(conversation.lastMessage || "Chưa có tin nhắn")}</small>
+                    </span>
+                    ${isPending ? '<span class="badge text-bg-danger rounded-pill">Mới</span>' : ""}
+                </button>
+            `;
+        }).join("")
+        : '<p class="small hc-muted p-3 mb-0">Chưa có cuộc trò chuyện nào.</p>';
+}
+
+
+function renderChatSearchResults(users) {
+    if (!chatUserSearchResults) {
+        return;
+    }
+
+    chatUserSearchResults.innerHTML = users.map((userProfile) => `
+        <button type="button" class="btn btn-light border text-start d-flex gap-2 align-items-center"
+            data-chat-user-id="${escapeHtml(userProfile.uid)}">
+            <span class="hc-avatar hc-avatar-sm">${renderChatAvatar(userProfile)}</span>
+            <span class="text-truncate">
+                <strong class="d-block text-truncate">${escapeHtml(userProfile.displayName || "Người dùng")}</strong>
+                <small class="hc-muted">${escapeHtml(userProfile.email || "")}</small>
+            </span>
+        </button>
+    `).join("");
+}
+
+
+async function listenToActiveMessages() {
+    if (!messageList || !activeConversationId) {
+        return;
+    }
+
+    if (stopMessagesListener) {
+        stopMessagesListener();
+        stopMessagesListener = null;
+    }
+
+    let conversationExists = chatConversations.some(
+        (conversation) => conversation.id === activeConversationId
+    );
+
+    if (!conversationExists) {
+        try {
+            const conversationSnapshot = await getDoc(doc(db, "chats", activeConversationId));
+            conversationExists = conversationSnapshot.exists();
+        } catch (error) {
+            conversationExists = false;
+        }
+    }
+
+    if (!conversationExists) {
+        messageList.innerHTML = '<p class="hc-muted text-center m-auto">Hãy gửi lời chào đầu tiên.</p>';
+        return;
+    }
+
+    const messagesQuery = query(
+        collection(db, "chats", activeConversationId, "messages"),
+        orderBy("createdAt", "asc")
+    );
+    stopMessagesListener = onSnapshot(messagesQuery, (snapshot) => {
+        messageList.innerHTML = snapshot.empty
+            ? '<p class="hc-muted text-center m-auto">Hãy gửi lời chào đầu tiên.</p>'
+            : snapshot.docs.map((messageDocument) => {
+                const message = messageDocument.data();
+                const isMine = message.senderId === currentAuthenticatedUser.uid;
+                return `
+                    <div class="hc-bubble ${isMine ? "sent align-self-end" : "received"}">
+                        ${escapeHtml(message.content || "")}
+                        <small class="d-block ${isMine ? "text-white-50" : "hc-muted"}">${formatDate(message.createdAt)}</small>
+                    </div>
+                `;
+            }).join("");
+        messageList.scrollTop = messageList.scrollHeight;
+    }, () => {
+        messageList.innerHTML = '<p class="text-danger text-center">Không thể tải tin nhắn.</p>';
+    });
+}
+
+
+async function openChatWithUser(userId) {
+    if (!chatApp || !currentAuthenticatedUser || !userId || userId === currentAuthenticatedUser.uid) {
+        return;
+    }
+
+    const userSnapshot = await getDoc(doc(db, "users", userId));
+    if (!userSnapshot.exists()) {
+        return;
+    }
+
+    activeChatUser = { uid: userId, ...userSnapshot.data() };
+    activeConversationId = getConversationId(currentAuthenticatedUser.uid, userId);
+    if (window.location.pathname.endsWith("chat.html")) {
+        window.history.replaceState({}, "", `chat.html?user=${encodeURIComponent(userId)}`);
+    }
+
+    if (activeChatHeader) {
+        activeChatHeader.innerHTML = `
+            <span class="hc-avatar">${renderChatAvatar(activeChatUser)}</span>
+            <div>
+                <h2 class="h6 mb-0">${escapeHtml(activeChatUser.displayName || "Người dùng")}</h2>
+                <small class="hc-muted">${escapeHtml(activeChatUser.email || "")}</small>
+            </div>
+            <a class="btn btn-sm btn-light ms-auto" href="profile.html?uid=${encodeURIComponent(userId)}">Xem hồ sơ</a>
+        `;
+    }
+    if (messageForm) {
+        messageForm.hidden = false;
+    }
+    renderConversationList();
+
+    await listenToActiveMessages();
+}
+
+
+async function sendChatMessage(event) {
+    event.preventDefault();
+    const content = messageInput?.value.trim();
+    if (!content || !activeChatUser || !currentAuthenticatedUser) {
+        return;
+    }
+
+    const conversationId = getConversationId(currentAuthenticatedUser.uid, activeChatUser.uid);
+    const participantIds = [currentAuthenticatedUser.uid, activeChatUser.uid].sort();
+    const conversationRef = doc(db, "chats", conversationId);
+    const currentProfile = {
+        displayName: currentAuthenticatedUser.email?.split("@")[0] || "Bạn",
+        email: currentAuthenticatedUser.email || "",
+        avatarUrl: currentProfileAvatar || null
+    };
+    const targetProfile = {
+        displayName: activeChatUser.displayName || activeChatUser.email?.split("@")[0] || "Người dùng",
+        email: activeChatUser.email || "",
+        avatarUrl: activeChatUser.avatarUrl || null
+    };
+
+    messageForm.querySelector("button[type=submit]").disabled = true;
+    try {
+        await setDoc(conversationRef, {
+            participantIds,
+            participantProfiles: {
+                [currentAuthenticatedUser.uid]: currentProfile,
+                [activeChatUser.uid]: targetProfile
+            },
+            lastMessage: content,
+            lastSenderId: currentAuthenticatedUser.uid,
+            lastMessageAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+        }, { merge: true });
+        await listenToActiveMessages();
+        await addDoc(collection(db, "chats", conversationId, "messages"), {
+            senderId: currentAuthenticatedUser.uid,
+            receiverId: activeChatUser.uid,
+            content,
+            createdAt: serverTimestamp()
+        });
+        messageInput.value = "";
+    } catch (error) {
+        window.alert(`Không thể gửi tin nhắn (${error.code || "unknown-error"}). Hãy Publish lại Firestore Rules.`);
+        console.error("Send message error:", error);
+    } finally {
+        messageForm.querySelector("button[type=submit]").disabled = false;
+    }
+}
+
+
+async function initializeChat(user) {
+    if (!chatApp) {
+        return;
+    }
+
+    const conversationsQuery = query(
+        collection(db, "chats"),
+        where("participantIds", "array-contains", user.uid)
+    );
+    onSnapshot(conversationsQuery, (snapshot) => {
+        chatConversations = snapshot.docs.map((conversationDocument) => ({
+            id: conversationDocument.id,
+            ...conversationDocument.data()
+        })).sort((first, second) => {
+            const firstTime = first.lastMessageAt?.toMillis?.() || 0;
+            const secondTime = second.lastMessageAt?.toMillis?.() || 0;
+            return secondTime - firstTime;
+        });
+        renderConversationList();
+        renderPendingMessages();
+    }, () => {
+        if (conversationList) conversationList.innerHTML = '<p class="text-danger p-3">Không thể tải cuộc trò chuyện.</p>';
+    });
+
+    const targetUserId = new URLSearchParams(window.location.search).get("user");
+    if (targetUserId) {
+        await openChatWithUser(targetUserId);
+    }
+}
+
+
+function watchPendingMessageCount(user) {
+    if (!messageCountElements.length) {
+        return;
+    }
+
+    const conversationsQuery = query(
+        collection(db, "chats"),
+        where("participantIds", "array-contains", user.uid)
+    );
+    onSnapshot(conversationsQuery, (snapshot) => {
+        const pendingCount = snapshot.docs.filter((conversationDocument) => {
+            const conversation = conversationDocument.data();
+            return conversation.lastSenderId && conversation.lastSenderId !== user.uid;
+        }).length;
+
+        messageCountElements.forEach((element) => {
+            element.textContent = pendingCount;
+            element.hidden = pendingCount === 0;
+        });
+    });
+}
+
+
 // ! Không giữ trang được bảo vệ trong lịch sử trình duyệt.
 function redirectToLogin() {
     window.location.replace("dangnhap.html");
@@ -832,11 +1240,31 @@ onAuthStateChanged(auth, async (user) => {
     }
 
     currentAuthenticatedUser = user;
+    profileOwnerUid = new URLSearchParams(window.location.search).get("uid") || user.uid;
     updateUserDetails(user);
     watchPosts();
 
     try {
-        const profile = await loadProfile(user);
+        const isOwnProfile = profileOwnerUid === user.uid;
+        const profileUser = isOwnProfile ? user : { uid: profileOwnerUid, email: "" };
+        const profile = await loadProfile(profileUser, isOwnProfile);
+
+        if (editProfileButton) {
+            editProfileButton.hidden = !isOwnProfile;
+        }
+        if (profileForm) {
+            profileForm.hidden = true;
+        }
+        if (messageUserButton) {
+            messageUserButton.hidden = isOwnProfile;
+            messageUserButton.href = `chat.html?user=${encodeURIComponent(profileOwnerUid)}`;
+        }
+
+        if (userSearchInput) {
+            await loadUsersForSearch();
+        }
+        watchPendingMessageCount(user);
+        await initializeChat(user);
         const adminAccess = user.uid === ADMIN_UID || isAdminUser(user, profile);
 
         if (adminPanel) {
@@ -869,6 +1297,52 @@ onAuthStateChanged(auth, async (user) => {
 
 if (adminSearchInput) {
     adminSearchInput.addEventListener("input", renderAdminUsers);
+}
+
+if (userSearchInput) {
+    userSearchInput.addEventListener("input", renderUserSearchResults);
+}
+
+if (conversationSearchInput) {
+    conversationSearchInput.addEventListener("input", async () => {
+        renderConversationList();
+        const keyword = conversationSearchInput.value.trim().toLowerCase();
+        if (!keyword || !chatUserSearchResults) {
+            if (chatUserSearchResults) chatUserSearchResults.innerHTML = "";
+            return;
+        }
+
+        try {
+            const usersSnapshot = await getDocs(collection(db, "users"));
+            const matchingUsers = usersSnapshot.docs
+                .map((userDocument) => ({ uid: userDocument.id, ...userDocument.data() }))
+                .filter((userProfile) => userProfile.uid !== currentAuthenticatedUser?.uid)
+                .filter((userProfile) => `${userProfile.displayName || ""} ${userProfile.email || ""}`.toLowerCase().includes(keyword));
+            renderChatSearchResults(matchingUsers);
+        } catch (error) {
+            chatUserSearchResults.innerHTML = '<p class="small text-danger">Không thể tìm người dùng.</p>';
+            console.error("Chat user search error:", error);
+        }
+    });
+}
+
+if (pendingMessageToggle) {
+    pendingMessageToggle.addEventListener("click", () => {
+        pendingMessageList.hidden = !pendingMessageList.hidden;
+    });
+}
+
+if (chatApp) {
+    chatApp.addEventListener("click", (event) => {
+        const chatUserButton = event.target.closest("[data-chat-user-id]");
+        if (chatUserButton) {
+            openChatWithUser(chatUserButton.dataset.chatUserId);
+        }
+    });
+}
+
+if (messageForm) {
+    messageForm.addEventListener("submit", sendChatMessage);
 }
 
 if (adminUserList) {

@@ -43,154 +43,38 @@
         </div>
     </nav>
 
-    <!-- ! Giao diện trò chuyện minh họa -->
     <main class="container py-4">
-        <div class="card hc-card overflow-hidden">
+        <div id="chat-app" class="card hc-card overflow-hidden">
             <div class="row g-0">
-
-                <!-- ! Tìm kiếm và danh sách cuộc trò chuyện -->
                 <aside class="col-lg-4 border-end">
                     <div class="p-3 border-bottom">
-                        <h1 class="h5 fw-bold">
-                            Tin nhắn
-                        </h1>
-
-                        <label
-                            class="visually-hidden"
-                            for="conversation-search"
-                        >
-                            Tìm kiếm cuộc trò chuyện
-                        </label>
-
-                        <input
-                            id="conversation-search"
-                            class="form-control"
-                            type="search"
-                            placeholder="Tìm kiếm cuộc trò chuyện"
-                        >
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h1 class="h5 fw-bold mb-0">Tin nhắn</h1>
+                            <span id="pending-message-count" class="badge text-bg-danger" hidden>0</span>
+                        </div>
+                        <input id="conversation-search" class="form-control mb-3" type="search" placeholder="Tìm người để nhắn...">
+                        <div class="hc-pending-box mb-3">
+                            <button id="pending-message-toggle" class="btn btn-sm btn-light w-100 text-start" type="button">
+                                Tin nhắn chờ <span id="pending-message-label" class="hc-muted">(0)</span>
+                            </button>
+                            <div id="pending-message-list" class="hc-pending-list mt-2" hidden></div>
+                        </div>
+                        <div id="user-search-results" class="d-grid gap-2 mb-3"></div>
                     </div>
-
-                    <div class="list-group list-group-flush hc-chat-list p-2">
-                        <button
-                            class="list-group-item list-group-item-action hc-chat-item active d-flex gap-3 align-items-center"
-                        >
-                            <span class="hc-avatar">
-                                LA
-                            </span>
-
-                            <span class="flex-grow-1 text-start">
-                                <strong class="d-block">
-                                    Linh Anh
-                                </strong>
-                                <small class="hc-muted">
-                                    Chúng mình bắt đầu nhé!
-                                </small>
-                            </span>
-
-                            <span class="badge text-bg-primary rounded-pill">
-                                2
-                            </span>
-                        </button>
-
-                        <button
-                            class="list-group-item list-group-item-action hc-chat-item d-flex gap-3 align-items-center"
-                        >
-                            <span class="hc-avatar">
-                                MN
-                            </span>
-
-                            <span class="text-start">
-                                <strong class="d-block">
-                                    Minh Nguyễn
-                                </strong>
-                                <small class="hc-muted">
-                                    Cảm ơn bạn nhiều.
-                                </small>
-                            </span>
-                        </button>
-
-                        <button
-                            class="list-group-item list-group-item-action hc-chat-item d-flex gap-3 align-items-center"
-                        >
-                            <span class="hc-avatar">
-                                TH
-                            </span>
-
-                            <span class="text-start">
-                                <strong class="d-block">
-                                    Tuấn Huy
-                                </strong>
-                                <small class="hc-muted">
-                                    Hẹn bạn cuối tuần!
-                                </small>
-                            </span>
-                        </button>
-                    </div>
+                    <div id="conversation-list" class="list-group list-group-flush hc-chat-list p-2"></div>
                 </aside>
 
-                <!-- ! Nội dung cuộc trò chuyện -->
                 <section class="col-lg-8 d-flex flex-column">
-                    <header class="d-flex align-items-center gap-3 p-3 border-bottom">
-                        <span class="hc-avatar">
-                            LA
-                        </span>
-
-                        <div>
-                            <h2 class="h6 mb-0">
-                                Linh Anh
-                            </h2>
-                            <small class="text-success">
-                                ● Đang hoạt động
-                            </small>
-                        </div>
-
-                        <button
-                            class="btn btn-sm btn-light ms-auto"
-                            aria-label="Xem thông tin Linh Anh"
-                        >
-                            ⓘ
-                        </button>
+                    <header id="active-chat-header" class="d-flex align-items-center gap-3 p-3 border-bottom">
+                        <span class="hc-muted">Chọn một người để bắt đầu nhắn tin.</span>
                     </header>
-
-                    <div class="hc-messages p-3 d-flex flex-column gap-3">
-                        <div class="hc-bubble received">
-                            Chào Huy, hôm nay bạn thế nào?
-                        </div>
-
-                        <div class="hc-bubble sent align-self-end">
-                            Mình ổn, cảm ơn Linh! Mình đang hoàn thiện giao diện HuyChat.
-                        </div>
-
-                        <div class="hc-bubble received">
-                            Tuyệt quá. Trông nó sẽ rất đẹp đấy!
-                        </div>
-
-                        <small class="hc-muted text-center">
-                            Hôm nay, 10:24
-                        </small>
+                    <div id="message-list" class="hc-messages p-3 d-flex flex-column gap-3">
+                        <p class="hc-muted text-center m-auto">Các tin nhắn của bạn sẽ xuất hiện ở đây.</p>
                     </div>
-
-                    <form class="p-3 border-top d-flex gap-2">
-                        <label
-                            class="visually-hidden"
-                            for="message-input"
-                        >
-                            Nhập tin nhắn
-                        </label>
-
-                        <input
-                            id="message-input"
-                            class="form-control"
-                            placeholder="Nhập tin nhắn..."
-                            autocomplete="off"
-                        >
-
-                        <button
-                            class="btn btn-hc"
-                            type="submit"
-                        >
-                            Gửi
-                        </button>
+                    <form id="message-form" class="p-3 border-top d-flex gap-2" hidden>
+                        <label class="visually-hidden" for="message-input">Nhập tin nhắn</label>
+                        <input id="message-input" class="form-control" maxlength="2000" placeholder="Nhập tin nhắn..." autocomplete="off">
+                        <button class="btn btn-hc" type="submit">Gửi</button>
                     </form>
                 </section>
 

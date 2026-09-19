@@ -1,0 +1,88 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && (
+          request.auth.uid == 'LpxkjvP3GoPng51EHzseei9ANlD3'
+          || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+        );
+    }
+
+    match /users/{userId} {
+      // Users need to read public profile data for the search feature.
+      allow read: if signedIn();
+      allow create: if signedIn() && request.auth.uid == userId;
+      allow update: if isAdmin()
+        || (signedIn()
+          && request.auth.uid == userId
+          && request.resource.data.role == resource.data.role
+          && request.resource.data.banned == resource.data.banned);
+      allow delete: if isAdmin();
+    }
+
+    match /posts/{postId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
+      // The client updates like/comment counters from authenticated actions.
+      allow update: if signedIn() && (
+        resource.data.authorId == request.auth.uid || isAdmin()
+        || request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['likesCount', 'commentsCount'])
+      );
+      allow delete: if signedIn()
+        && (resource.data.authorId == request.auth.uid || isAdmin());
+
+      match /likes/{userId} {
+        allow read: if signedIn();
+        allow create: if signedIn() && request.auth.uid == userId;
+        allow delete: if signedIn() && request.auth.uid == userId;
+      }
+
+      match /comments/{commentId} {
+        allow read: if signedIn();
+        allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
+        allow update, delete: if signedIn()
+          && (resource.data.authorId == request.auth.uid || isAdmin());
+
+        match /replies/{replyId} {
+          allow read: if signedIn();
+          allow create: if signedIn() && request.resource.data.authorId == request.auth.uid;
+          allow update, delete: if signedIn()
+            && (resource.data.authorId == request.auth.uid || isAdmin());
+        }
+      }
+    }
+
+    match /chats/{chatId} {
+      allow read: if signedIn()
+        && resource.data.participantIds.hasAny([request.auth.uid]);
+      allow create: if signedIn()
+        && request.resource.data.participantIds.size() == 2
+        && request.resource.data.participantIds.hasAny([request.auth.uid]);
+      allow update: if signedIn()
+        && resource.data.participantIds.hasAny([request.auth.uid])
+        && request.resource.data.participantIds.size() == 2
+        && resource.data.participantIds.hasAll(request.resource.data.participantIds)
+        && request.resource.data.participantIds.hasAll(resource.data.participantIds);
+      allow delete: if signedIn()
+        && resource.data.participantIds.hasAny([request.auth.uid]);
+
+      match /messages/{messageId} {
+        allow read: if signedIn()
+          && get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds.hasAny([request.auth.uid]);
+        allow create: if signedIn()
+          && request.resource.data.senderId == request.auth.uid
+          && request.resource.data.receiverId != request.auth.uid
+          && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds
+          && request.resource.data.receiverId in get(/databases/$(database)/documents/chats/$(chatId)).data.participantIds;
+        allow update, delete: if false;
+      }
+    }
+  }
+}

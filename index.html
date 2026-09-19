@@ -18,6 +18,7 @@
                 <span class="hc-avatar" data-user-avatar><span data-user-initials>HC</span></span>
                 <span class="small d-none d-sm-block" data-user-name>Huy</span>
                 <a class="btn btn-sm btn-light" href="profile.html">Hồ sơ</a>
+                <a class="btn btn-sm btn-light" href="chat.html">Tin nhắn <span data-message-count class="badge text-bg-danger" hidden>0</span></a>
                 <button class="btn btn-sm btn-outline-secondary" data-sign-out>Đăng xuất</button>
             </div>
         </div>
@@ -39,6 +40,22 @@
                                 </div>
                             </form>
                         </div>
+                    </div>
+                </div>
+
+                <div id="user-search-panel" class="card hc-card mb-4">
+                    <div class="card-body">
+                        <h2 class="h5 mb-3">Tìm người dùng</h2>
+                        <label class="visually-hidden" for="user-search">Tìm người dùng</label>
+                        <input
+                            id="user-search"
+                            type="search"
+                            class="form-control"
+                            placeholder="Tìm theo tên hoặc email"
+                            autocomplete="off"
+                        >
+                        <p id="user-search-status" class="small hc-muted mt-3 mb-2" role="status"></p>
+                        <div id="user-search-results" class="d-grid gap-2" aria-live="polite"></div>
                     </div>
                 </div>
 
