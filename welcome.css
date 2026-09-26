@@ -198,6 +198,7 @@
 
 .footer-links {
     text-decoration: none;
+    overflow-wrap: anywhere;
 }
 
 .footer-links li + li {
@@ -231,5 +232,151 @@
 
     .community-card-offset {
         margin-top: 1.25rem;
+    }
+}
+
+.welcome-hero {
+    background:
+        radial-gradient(circle at 15% 25%, rgba(8, 127, 131, 0.14), transparent 28rem),
+        radial-gradient(circle at 90% 80%, rgba(228, 122, 97, 0.13), transparent 25rem),
+        linear-gradient(120deg, #f7fbf8, #eff7f3 58%, #fbf4ed);
+}
+
+.welcome-eyebrow,
+.feature-icon {
+    background: #e5f3ee;
+}
+
+.welcome-gradient-text,
+.welcome-eyebrow,
+.feature-icon,
+.preview-icon {
+    color: #087f83;
+}
+
+.chat-preview {
+    border-color: #dfeae5;
+    border-radius: 0.9rem;
+    box-shadow: 0 1.25rem 3.5rem rgba(24, 53, 54, 0.13);
+    transform: rotate(1.2deg);
+    transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.chat-preview:hover {
+    transform: rotate(0deg) translateY(-3px);
+    box-shadow: 0 1.5rem 3.8rem rgba(24, 53, 54, 0.17);
+}
+
+.chat-preview-header,
+.chat-preview-footer {
+    border-color: #e8efec;
+}
+
+.chat-preview-body {
+    background: #f7faf8;
+}
+
+.preview-message.received,
+.avatar-more {
+    background: #e8efec;
+}
+
+.preview-message.sent {
+    background: #087f83;
+}
+
+.feature-card:hover {
+    box-shadow: 0 0.8rem 1.5rem rgba(24, 53, 54, 0.1);
+}
+
+.avatar-blue {
+    background: linear-gradient(135deg, #498ca1, #087f83);
+}
+
+.avatar-green {
+    background: linear-gradient(135deg, #48a985, #277f72);
+}
+
+.avatar-pink {
+    background: linear-gradient(135deg, #ed9b7b, #cf6980);
+}
+
+.about-panel {
+    background: linear-gradient(120deg, #086e72, #14968b 68%, #438e78);
+}
+
+.welcome-footer {
+    background: #183536;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chat-preview,
+    .feature-card {
+        transition: none;
+    }
+}
+
+.welcome-hero {
+    background: #f0f2f5;
+}
+
+.welcome-eyebrow,
+.feature-icon {
+    background: #e7f3ff;
+}
+
+.welcome-gradient-text,
+.welcome-eyebrow,
+.feature-icon,
+.preview-icon {
+    color: #0866ff;
+}
+
+.chat-preview {
+    border-color: #e4e6eb;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+    transform: none;
+}
+
+.chat-preview:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12);
+}
+
+.chat-preview-header,
+.chat-preview-footer {
+    border-color: #e4e6eb;
+}
+
+.chat-preview-body {
+    background: #f0f2f5;
+}
+
+.preview-message.received,
+.avatar-more {
+    background: #e4e6eb;
+}
+
+.preview-message.sent {
+    background: #0866ff;
+}
+
+.feature-card:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.12);
+}
+
+.about-panel {
+    background: #0866ff;
+}
+
+.welcome-footer {
+    background: #1c1e21;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chat-preview,
+    .feature-card {
+        transition: none;
     }
 }
